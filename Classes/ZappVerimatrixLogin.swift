@@ -61,17 +61,3 @@ import ZappLoginPluginsSDK
         return false
     }
     
-//MARK: - Utils private classes
-
-/**
- An object to use when plugin presented on app launch (without any item to be played), since *ZappCleengLogin* requires at least one item.
- */
-private class EmptyAPPurchasableItem : APPurchasableItem {
-    override var authorizationProvidersIDs: NSArray! {
-        return []
-    }
-    
-    override func isLoaded() -> Bool {
-        return true
-    }
-}

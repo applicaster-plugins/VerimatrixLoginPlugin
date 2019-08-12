@@ -2,7 +2,7 @@
 	"api": {
 		"class_name": "ZappVerimatrixLogin",
 		"modules": [
-			"ZappVerimatrixLogin"
+			"VerimatrixLoginPlugin"
 		],
 		"require_startup_execution": true
 	},
@@ -30,7 +30,13 @@
 	"unsupported_since_zapp_sdk": "",
 	"supported_nav_items": [],
 	"react_native": false,
-	"custom_configuration_fields": [],
+	"custom_configuration_fields": [
+			{
+				"type": "checkbox",
+				"key": "display_on_launch",
+				"tooltip_text": "show the login screen when app launched"
+			}
+	],
 	"targets": [
 		"mobile"
 	]

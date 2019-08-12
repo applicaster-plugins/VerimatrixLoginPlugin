@@ -8,7 +8,7 @@
 	},
 	"dependency_repository_url": [
 		"https://github.com/applicaster-plugins/VerimatrixLoginPlugin-iOS",
-		"git@github.com:applicaster/VerimatrixLoginPlugin-iOS"
+		"git@github.com:applicaster-plugins/VerimatrixLoginPlugin-iOS.git"
 	],
 	"platform": "ios",
 	"author_name": "Roei Carmel",

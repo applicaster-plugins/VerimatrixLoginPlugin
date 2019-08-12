@@ -12,7 +12,7 @@ import ZappLoginPluginsSDK
 
 
 
-@objc public class ZappVerimatrixLogin : NSObject, ZPLoginProviderUserDataProtocol {
+@objc public class ZappVerimatrixLogin : NSObject {
     
    
     /// Plugin configuration json. See plugin manifest for the list of available configuration flags
@@ -61,3 +61,4 @@ import ZappLoginPluginsSDK
         return false
     }
     
+}

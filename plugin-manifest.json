@@ -14,11 +14,11 @@
 	"author_name": "Roei Carmel",
 	"author_email": "roei.carmel@msapps.mobi",
 	"manifest_version": "0.1.0",
-	"name": "VerimatrixLoginPlugi",
-	"description": "VerimatrixLoginPlugin",
+	"name": "WGNLoginPlugin",
+	"description": "WGN login plugin",
 	"type": "login",
-	"screen": false,
-	"identifier": "VerimatrixLoginPlugin",
+	"screen": true,
+	"identifier": "WGNLoginPlugin",
 	"ui_builder_support": true,
 	"dependency_name": "VerimatrixLoginPlugin",
 	"dependency_version": "0.1.0",
@@ -37,6 +37,17 @@
 				"tooltip_text": "show the login screen when app launched"
 			}
 	],
+	"styles":{
+		"fields" : [
+			{
+				"key": "provider_screen_title_font",
+				"label": "provider screen title font",
+				"initial_value": "HelveticaNeue-Bold",
+        "type": "ios_font_selector",
+        "placeholder": "Select Font"
+			}
+		]
+	},
 	"targets": [
 		"mobile"
 	]

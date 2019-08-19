@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VerimatrixWebViewLoginController" customModule="VerimatrixLoginPlugin">
+            <connections>
+                <outlet property="view" destination="iN0-l3-epB" id="XUa-4z-mCN"/>
+                <outlet property="webViewContainer" destination="yll-QC-a64" id="Gec-V7-ZuL"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yll-QC-a64">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="yll-QC-a64" secondAttribute="bottom" id="11h-P0-uof"/>
+                <constraint firstItem="yll-QC-a64" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="4iY-DB-u9Q"/>
+                <constraint firstItem="yll-QC-a64" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="8oI-aw-IFC"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="yll-QC-a64" secondAttribute="trailing" id="fWb-Nt-Z5j"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+        </view>
+    </objects>
+</document>

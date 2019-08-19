@@ -13,13 +13,17 @@ import ApplicasterSDK
 
 
 
-@objc public class ZappVerimatrixLogin : NSObject ,ZPAppLoadingHookProtocol, ZPLoginProviderProtocol, VerimatrixBaseProtocol{
-   
+@objc public class ZappVerimatrixLogin : NSObject ,ZPAppLoadingHookProtocol, ZPLoginProviderProtocol, VerimatrixBaseProtocol, VerimatrixRedirectUriProtocol{
+    
     public var configurationJSON: NSDictionary?
 
     public var configurationManger: ZappVerimatrixConfiguration?
     
     private var navigationController: UINavigationController? = nil
+    
+    private var loginViewController: VerimatrixLoginViewController!
+    
+    private var api: VerimatrixLoginApi?
     
     fileprivate var loginCompletion:(((_ status: ZPLoginOperationStatus) -> Void))?
 
@@ -30,6 +34,7 @@ import ApplicasterSDK
     public required init(configurationJSON: NSDictionary?) {
         super.init()
         self.configurationJSON = configurationJSON
+        api = VerimatrixLoginApi(config: configurationJSON)
     }
     
     /**
@@ -58,7 +63,7 @@ import ApplicasterSDK
     }
     
     public func executeAfterAppRootPresentation(displayViewController: UIViewController?, completion: (() -> Void)?) {
-        guard let startOnLaunch = configurationJSON?[ConfigKey.startOnLaunch.rawValue] else {
+        guard let startOnLaunch = configurationJSON?[ZappVerimatrixConfiguration.ConfigKey.startOnLaunch.rawValue] else {
             return
         }
         
@@ -80,19 +85,49 @@ import ApplicasterSDK
     
     public func presentLoginScreen(){
         let bundle = Bundle.init(for: type(of: self))
-        let loginViewController = VerimatrixLoginViewController(nibName: "VerimatrixLoginViewController", bundle: bundle)
+        loginViewController = VerimatrixLoginViewController(nibName: "VerimatrixLoginViewController", bundle: bundle)
         loginViewController.delegate = self
+        loginViewController.configurationJson = self.configurationJSON
+        if let screenModel = ZAAppConnector.sharedInstance().layoutComponentsDelegate.componentsManagerGetScreenComponentforPluginID(pluginID: "WGNLoginPlugin"), screenModel.isPluginScreen() , let style = screenModel.style{
+            let test = style.object
+        }
         navigationController = UINavigationController.init(rootViewController: loginViewController)
         navigationController?.setNavigationBarHidden(true, animated: false)
         if let navController = navigationController{
-            APApplicasterController.sharedInstance().rootViewController.topmostModal().present(navController,
-                                                                                               animated: true) {
-            }
+            api?.getProviders(completion: { (ids) in
+                if (ids?.count != 0){
+                    self.loginViewController.providersName = ids
+                    APApplicasterController.sharedInstance().rootViewController.topmostModal().present(navController,
+                                                                                                       animated: true) {
+                    }
+                }
+            })
+           
         }
     }
     
     public func getUserToken() -> String {
         return "test"
+    }
+    
+    public func providerSelected(provider: String) {
+        if let url = api?.urlForResource(resource: provider){
+             let bundle = Bundle.init(for: type(of: self))
+             let webview = VerimatrixWebViewController(url: URL(string: url))
+             webview?.redirectUriDelegate = self
+             let webViewloginController = VerimatrixWebViewLoginController(nibName: "VerimatrixWebViewLoginController", bundle: bundle)
+             webViewloginController.webViewController = webview
+             loginViewController.present(webViewloginController,animated: true){
+                webViewloginController.addChildViewController(webViewloginController.webViewController, to: webViewloginController.webViewContainer)
+                webview?.loadTargetURL()
+            }
+        }
+    }
+    
+    public func handleRedirectUriWith(params: [String : Any]?) {
+        if let code = params?["code"] as? String {
+            closeBtnDidPress()
+        }
     }
     
     public func closeBtnDidPress() {

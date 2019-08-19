@@ -10,4 +10,5 @@ import AVFoundation
 
 @objc public protocol VerimatrixBaseProtocol {
     func closeBtnDidPress()
+    func providerSelected(provider: String)
 }

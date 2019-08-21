@@ -1,54 +1,122 @@
 {
-	"api": {
-		"class_name": "ZappVerimatrixLogin",
-		"modules": [
-			"VerimatrixLoginPlugin"
-		],
-		"require_startup_execution": true
-	},
-	"dependency_repository_url": [
-		"https://github.com/applicaster-plugins/VerimatrixLoginPlugin-iOS",
-		"git@github.com:applicaster-plugins/VerimatrixLoginPlugin-iOS.git"
-	],
-	"platform": "ios",
-	"author_name": "Roei Carmel",
-	"author_email": "roei.carmel@msapps.mobi",
-	"manifest_version": "0.1.0",
-	"name": "WGNLoginPlugin",
-	"description": "WGN login plugin",
-	"type": "login",
-	"screen": true,
-	"identifier": "WGNLoginPlugin",
-	"ui_builder_support": true,
-	"dependency_name": "VerimatrixLoginPlugin",
-	"dependency_version": "0.1.0",
-	"whitelisted_account_ids": [
-		"5d31d83c3ee60f00085c4ff4"
-	],
-	"min_zapp_sdk": "11.2.0-Dev",
-	"deprecated_since_zapp_sdk": "",
-	"unsupported_since_zapp_sdk": "",
-	"supported_nav_items": [],
-	"react_native": false,
-	"custom_configuration_fields": [
-			{
-				"type": "checkbox",
-				"key": "display_on_launch",
-				"tooltip_text": "show the login screen when app launched"
-			}
-	],
-	"styles":{
-		"fields" : [
-			{
-				"key": "provider_screen_title_font",
-				"label": "provider screen title font",
-				"initial_value": "HelveticaNeue-Bold",
-        "type": "ios_font_selector",
-        "placeholder": "Select Font"
-			}
-		]
-	},
-	"targets": [
-		"mobile"
-	]
+  "api": {
+    "class_name": "ZappVerimatrixLogin",
+    "modules": [
+      "VerimatrixLoginPlugin"
+    ],
+    "require_startup_execution": true
+  },
+  "dependency_repository_url": [
+    "https://github.com/applicaster-plugins/VerimatrixLoginPlugin-iOS",
+    "git@github.com:applicaster-plugins/VerimatrixLoginPlugin-iOS.git"
+  ],
+  "platform": "ios",
+  "author_name": "Roei Carmel",
+  "author_email": "roei.carmel@msapps.mobi",
+  "manifest_version": "0.1.0",
+  "name": "WGNLoginPlugin",
+  "description": "WGN login plugin",
+  "type": "login",
+  "screen": false,
+  "identifier": "WGNLoginPlugin",
+  "ui_builder_support": true,
+  "dependency_name": "VerimatrixLoginPlugin",
+  "dependency_version": "0.1.0",
+  "whitelisted_account_ids": [
+    "5d31d83c3ee60f00085c4ff4"
+  ],
+  "min_zapp_sdk": "11.2.0-Dev",
+  "deprecated_since_zapp_sdk": "",
+  "unsupported_since_zapp_sdk": "",
+  "supported_nav_items": [],
+  "react_native": false,
+  "custom_configuration_fields": [
+    {
+      "type": "text",
+      "key": "WGN_platform_id",
+      "tooltip_text": "WGN Platform id"
+    },
+    {
+      "type": "checkbox",
+      "key": "display_on_launch",
+      "tooltip_text": "show the login screen when app launched"
+    },
+    {
+      "type": "uploader",
+      "key": "ios_assets_bundle"
+    },
+    {
+      "type": "text",
+      "key": "provider_screen_title_text",
+      "tooltip_text": "Providers screen title text"
+    },
+		{
+			"type": "text",
+      "key": "provider_screen_title_color",
+      "tooltip_text": "Title color of providers screen"
+		},
+		{
+			"type": "text",
+			"key": "provider_screen_title_size",
+			"tooltip_text": "Title size of providers screen"
+		},
+    {
+			"type": "text",
+			"key": "provider_screen_title_font",
+			"tooltip_text": "Title font of providers screen"
+		},
+    {
+      "type": "text",
+      "key": "provider_screen_action_button_text",
+      "tooltip_text": "Providers screen submit button text"
+    },
+		{
+		 "key": "provider_action_button_text_color",
+		 "type": "text",
+		 "tooltip_text": "Providers screen submit button text color."
+	 },
+	 {
+      "key": "provider_action_button_text_size",
+      "type": "text",
+      "tooltip_text": "Providers screen submit button text size."
+    },
+    {
+       "key": "provider_action_button_text_font",
+       "type": "text",
+       "tooltip_text": "Providers screen submit button text font."
+     },
+		{
+      "key": "provider_screen_background",
+      "type": "text",
+      "tooltip_text": "Background color of providers screen."
+    },
+		{
+      "key": "provider_selected_color",
+      "type": "text",
+      "tooltip_text": "Selected provider color."
+    },
+    {
+      "key": "provider_selected_size",
+      "type": "text",
+      "tooltip_text": "Selected provider size."
+    },
+    {
+      "key": "provider_selected_font",
+      "type": "text",
+      "tooltip_text": "Selected provider font."
+    },
+    {
+      "key": "provider_default_color",
+      "type": "text",
+      "tooltip_text": "Default provider color."
+    },
+    {
+      "key": "provider_default_font",
+      "type": "text",
+      "tooltip_text": "Default provider font."
+    }
+  ],
+  "targets": [
+    "mobile"
+  ]
 }

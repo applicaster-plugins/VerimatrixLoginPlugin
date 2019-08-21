@@ -17,7 +17,6 @@ public struct ZappVerimatrixConfiguration {
     
     public init(configuration: [String: Any]){
         self.configuration  = configuration
-        
     }
     
     public enum ConfigKey : String {
@@ -25,22 +24,25 @@ public struct ZappVerimatrixConfiguration {
         case WGNPlatformId = "WGN_platform_id"
         case iOSAssets = "ios_assets_bundle"
         case providersScreenTitle = "provider_screen_title_text"
-        case providersScreenActionBtnTitle = "provider_screen_action_button_text"
+        case actionBtnTitle = "provider_screen_action_button_text"
+        case actionBtnTitleColor = "provider_action_button_text_color"
+        case actionBtnTitleSize = "provider_action_button_text_size"
+        case actionBtnTitleFont = "provider_action_button_text_font"
+        case background = "provider_screen_background"
+        case titleColor = "provider_screen_title_color"
+        case titleSize = "provider_screen_title_size"
+        case titleFont = "provider_screen_title_font"
+        case pickerDeafultColor = "provider_default_color"
+        case pickerDeafultFont = "provider_default_font"
+        case pickerSelectedColor = "provider_selected_color"
+        case pickerSelectedSize = "provider_selected_size"
+        case pickerSelectedFont = "provider_selected_font"
     }
     
     public enum AssetKey : String{
         case closeBtn = "provider_screen_close_btn"
         case logoImage = "provider_screen_logo"
         case loginBtn = "provider_action_button_asset"
-    }
-    
-    public enum StyleKey : String{
-        case background = "provider_screen_background"
-        case gradientOverlay = "provider_text_gradient_overlay"
-        case defaultPickerText = "provider_default_text"
-        case lineSeparator = "provider_separator"
-        case pickerSelectedText = "provider_selected_text"
-        
     }
     
 }

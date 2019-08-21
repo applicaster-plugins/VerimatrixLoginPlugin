@@ -16,15 +16,10 @@ import ApplicasterSDK
 @objc public class ZappVerimatrixLogin : NSObject ,ZPAppLoadingHookProtocol, ZPLoginProviderProtocol, VerimatrixBaseProtocol, VerimatrixRedirectUriProtocol{
     
     public var configurationJSON: NSDictionary?
-
-    public var configurationManger: ZappVerimatrixConfiguration?
-    
-    private var navigationController: UINavigationController? = nil
-    
-    private var loginViewController: VerimatrixLoginViewController!
-    
-    private var api: VerimatrixLoginApi?
-    
+    var configurationManger: ZappVerimatrixConfiguration?
+    var navigationController: UINavigationController? = nil
+    var loginViewController: VerimatrixLoginViewController!
+    var api: VerimatrixLoginApi?
     fileprivate var loginCompletion:(((_ status: ZPLoginOperationStatus) -> Void))?
 
     public required override init() {
@@ -35,6 +30,7 @@ import ApplicasterSDK
         super.init()
         self.configurationJSON = configurationJSON
         api = VerimatrixLoginApi(config: configurationJSON)
+        api?.delegate = self
     }
     
     /**
@@ -78,36 +74,32 @@ import ApplicasterSDK
         
         if(presentLogin){
             self.login(nil) { (status) in
-                
             }
         }
     }
     
-    public func presentLoginScreen(){
+     func presentLoginScreen(){
         let bundle = Bundle.init(for: type(of: self))
         loginViewController = VerimatrixLoginViewController(nibName: "VerimatrixLoginViewController", bundle: bundle)
         loginViewController.delegate = self
-        loginViewController.configurationJson = self.configurationJSON
-        if let screenModel = ZAAppConnector.sharedInstance().layoutComponentsDelegate.componentsManagerGetScreenComponentforPluginID(pluginID: "WGNLoginPlugin"), screenModel.isPluginScreen() , let style = screenModel.style{
-            let test = style.object
-        }
+        loginViewController.configurationJson = self.configurationJSON as? [String : Any]
         navigationController = UINavigationController.init(rootViewController: loginViewController)
         navigationController?.setNavigationBarHidden(true, animated: false)
         if let navController = navigationController{
-            api?.getProviders(completion: { (ids) in
-                if (ids?.count != 0){
-                    self.loginViewController.providersName = ids
+            api?.getProviders(completion: { (displayNames , providersIdps)  in
+                if (providersIdps?.count != 0){
+                    self.loginViewController.providersName = displayNames
+                    self.loginViewController.providersIdp  = providersIdps
                     APApplicasterController.sharedInstance().rootViewController.topmostModal().present(navController,
                                                                                                        animated: true) {
                     }
                 }
             })
-           
         }
     }
     
     public func getUserToken() -> String {
-        return "test"
+        return CredentialsManager.getCredential(key: .Code)
     }
     
     public func providerSelected(provider: String) {
@@ -117,6 +109,8 @@ import ApplicasterSDK
              webview?.redirectUriDelegate = self
              let webViewloginController = VerimatrixWebViewLoginController(nibName: "VerimatrixWebViewLoginController", bundle: bundle)
              webViewloginController.webViewController = webview
+             webViewloginController.delegate = self
+             webViewloginController.configurationJson = self.configurationJSON as? [String : Any]
              loginViewController.present(webViewloginController,animated: true){
                 webViewloginController.addChildViewController(webViewloginController.webViewController, to: webViewloginController.webViewContainer)
                 webview?.loadTargetURL()
@@ -126,7 +120,14 @@ import ApplicasterSDK
     
     public func handleRedirectUriWith(params: [String : Any]?) {
         if let code = params?["code"] as? String {
+            CredentialsManager.saveCredential(object: code, for: .Code)
             closeBtnDidPress()
+        }
+    }
+    
+    public func webviewCloseBtnDidPress() {
+        if  let vc = self.navigationController?.viewControllers.first{
+            vc.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -136,4 +137,7 @@ import ApplicasterSDK
         }
     }
     
+    public func errorOnApi() {
+        
+    }
 }

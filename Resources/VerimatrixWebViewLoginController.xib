@@ -12,7 +12,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="VerimatrixWebViewLoginController" customModule="VerimatrixLoginPlugin">
             <connections>
-                <outlet property="view" destination="iN0-l3-epB" id="XUa-4z-mCN"/>
+                <outlet property="closeBtn" destination="njG-qT-xYw" id="g8J-5X-4f9"/>
+                <outlet property="logoImageView" destination="xnH-vT-3r9" id="8HF-U9-oaZ"/>
+                <outlet property="navBackground" destination="R3v-O9-pO4" id="1hX-8m-4f8"/>
+                <outlet property="view" destination="iN0-l3-epB" id="UQk-Iw-0m4"/>
                 <outlet property="webViewContainer" destination="yll-QC-a64" id="Gec-V7-ZuL"/>
             </connections>
         </placeholder>
@@ -21,15 +24,50 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R3v-O9-pO4">
+                    <rect key="frame" x="0.0" y="20.5" width="375" height="120"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="xnH-vT-3r9">
+                            <rect key="frame" x="82.5" y="0.0" width="210" height="106"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="210" id="0dU-zc-u3J"/>
+                                <constraint firstAttribute="height" constant="106" id="bHY-Jf-CVQ"/>
+                            </constraints>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="njG-qT-xYw">
+                            <rect key="frame" x="317" y="10" width="38" height="38"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="38" id="YfK-Oz-B2T"/>
+                                <constraint firstAttribute="height" constant="38" id="fRi-Sk-nZB"/>
+                            </constraints>
+                            <state key="normal" title="Button">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <connections>
+                                <action selector="closeBtnDidPress:" destination="-1" eventType="touchUpInside" id="U3q-cj-whh"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="xnH-vT-3r9" firstAttribute="centerX" secondItem="R3v-O9-pO4" secondAttribute="centerX" id="8dB-sG-6H3"/>
+                        <constraint firstItem="xnH-vT-3r9" firstAttribute="top" secondItem="R3v-O9-pO4" secondAttribute="top" id="9L0-ud-FIO"/>
+                        <constraint firstItem="njG-qT-xYw" firstAttribute="top" secondItem="xnH-vT-3r9" secondAttribute="top" constant="10" id="clx-vO-YZV"/>
+                        <constraint firstAttribute="height" constant="120" id="nsf-R1-kQm"/>
+                        <constraint firstAttribute="trailing" secondItem="njG-qT-xYw" secondAttribute="trailing" constant="20" id="t3L-cD-1Ak"/>
+                    </constraints>
+                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yll-QC-a64">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <rect key="frame" x="0.0" y="140.5" width="375" height="526.5"/>
                 </view>
             </subviews>
             <constraints>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="yll-QC-a64" secondAttribute="bottom" id="11h-P0-uof"/>
-                <constraint firstItem="yll-QC-a64" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="4iY-DB-u9Q"/>
-                <constraint firstItem="yll-QC-a64" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="8oI-aw-IFC"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="yll-QC-a64" secondAttribute="trailing" id="fWb-Nt-Z5j"/>
+                <constraint firstItem="yll-QC-a64" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="CXg-j0-x7Y"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="R3v-O9-pO4" secondAttribute="trailing" id="G1O-zU-f5h"/>
+                <constraint firstItem="yll-QC-a64" firstAttribute="top" secondItem="R3v-O9-pO4" secondAttribute="bottom" id="Xc1-Oe-KDH"/>
+                <constraint firstAttribute="bottom" secondItem="yll-QC-a64" secondAttribute="bottom" id="alW-q5-UAZ"/>
+                <constraint firstItem="R3v-O9-pO4" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" multiplier="1.02" id="bwP-P6-thb"/>
+                <constraint firstItem="R3v-O9-pO4" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="d0e-Ph-WW5"/>
+                <constraint firstItem="yll-QC-a64" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="jy6-MS-qIV"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
         </view>

@@ -18,6 +18,7 @@ public protocol VerimatrixRedirectUriProtocol {
     func handleRedirectUriWith(params: [String : Any]?)
 }
 
+//handling redirect url from webview login
 class VerimatrixWebViewController: APTimedWebViewController {
     
     public var redirectUriDelegate: VerimatrixRedirectUriProtocol!

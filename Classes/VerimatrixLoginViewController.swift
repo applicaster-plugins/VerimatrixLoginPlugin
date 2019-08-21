@@ -10,21 +10,18 @@ import ZappPlugins
 
 class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UIPickerViewDataSource {
     
-    
-    public var providersName:[String]?
-    public var delegate: VerimatrixBaseProtocol?
-    public var configurationJson : NSDictionary?
-    
+    var providersName:[String]?
+    var providersIdp:[String]?
+    var delegate: VerimatrixBaseProtocol?
+    var configurationJson : [String:Any]?
+   
     @objc @IBOutlet fileprivate weak var closeButton: UIButton!
     @objc @IBOutlet fileprivate weak var logoImageView: UIImageView!
     @objc @IBOutlet fileprivate weak var chooseProviderLabel: UILabel!
     @objc @IBOutlet fileprivate weak var providerPickerView: UIPickerView!
     @objc @IBOutlet fileprivate weak var loginButton: UIButton!
     @objc @IBOutlet fileprivate weak var backgroundView: UIView!
-    @objc @IBOutlet fileprivate weak var webViewContainer: UIView!
-    
-    
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -37,7 +34,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     }
     
    @objc @IBAction fileprivate func loginBtnDidPress(_ sender: UIButton) {
-        if let delegate = delegate, let resource = providersName?[providerPickerView.selectedRow(inComponent: 0)]{
+        if let delegate = delegate, let resource = providersIdp?[providerPickerView.selectedRow(inComponent: 0)]{
         delegate.providerSelected(provider: resource)
        }
     }
@@ -50,22 +47,19 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         super.init(coder: aDecoder)
     }
     
-    func login(url: String){
-        let webview = VerimatrixWebViewController(url: URL(string: url))
-        //webview?.redirectUriDelegate = self
-        self.addChildViewController(webview, to: self.webViewContainer)
-        self.webViewContainer.isHidden = false
-        webview?.loadTargetURL()
-    }
-    
+    //setting all views with helper from the plugin configuration ans assets
     func setupView(){
-        guard let styleManager = ZAAppConnector.sharedInstance().layoutsStylesDelegate else {
-            return
-        }
         self.providerPickerView.delegate = self
         self.providerPickerView.dataSource = self
-        StyleHelper.setLabel(label: chooseProviderLabel, colorForKey: "", fontSizeKey: "", fontNameKey: "", textKey: ZappVerimatrixConfiguration.ConfigKey.providersScreenTitle.rawValue, from: configurationJson as? [String : Any] )
-        StyleHelper.setButton(button: loginButton, colorForKey: "", fontSizeKey: "", fontNameKey: "", textKey: ZappVerimatrixConfiguration.ConfigKey.providersScreenActionBtnTitle.rawValue, from: configurationJson as? [String : Any] )
+        let bundle = Bundle(for: type(of: self))
+        StyleHelper.setViewColor(view: backgroundView, colorKey: .background, from: configurationJson)
+        StyleHelper.setLabelStyle(label: chooseProviderLabel, colorForKey: .titleColor, fontSizeKey: .titleSize , fontNameKey: .titleFont, from: configurationJson)
+        StyleHelper.setLabelText(label: chooseProviderLabel, textKey: .providersScreenTitle, from: configurationJson)
+        StyleHelper.setButtonText(button: loginButton, textKey: .actionBtnTitle, from: configurationJson)
+        StyleHelper.setButtonStyle(button: loginButton, colorForKey: .actionBtnTitleColor, fontSizeKey: .actionBtnTitleSize, fontNameKey: .actionBtnTitleFont, from: configurationJson)
+        StyleHelper.setImageView(imageView: logoImageView, bundle: bundle, key: .logoImage)
+        StyleHelper.setButtonImage(button: closeButton, bundle: bundle, key: .closeBtn)
+        StyleHelper.setButtonBGImage(button: loginButton, bundle: bundle, key: .loginBtn)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -76,9 +70,30 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         return providersName?.count ?? 0
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return providersName?[row]
+    //setting different color for the selected value and the else
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        for view in pickerView.subviews {
+        
+            if view.frame.size.height < 1 {
+                var frame = view.frame
+                frame.size.height = 1
+                view.frame = frame
+                view.backgroundColor = UIColor(red: 52/255.0, green: 54/255, blue: 54/255, alpha: 1)
+            }
+        }
+        
+        let label = UILabel()
+        label.text = providersName?[row]
+        label.textAlignment = NSTextAlignment.center
+        if(row == pickerView.selectedRow(inComponent: component)){
+            StyleHelper.setLabelStyle(label: label, colorForKey: .pickerSelectedColor, fontSizeKey: .pickerSelectedSize , fontNameKey: .pickerSelectedFont, from: configurationJson)
+        }else{
+            StyleHelper.setLabelStyle(label: label, colorForKey: .pickerDeafultColor, fontSizeKey: .pickerSelectedSize , fontNameKey: .pickerDeafultFont, from: configurationJson)
+        }
+        return label
     }
     
-    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        pickerView.reloadAllComponents()
+    }
 }

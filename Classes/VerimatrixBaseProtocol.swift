@@ -10,4 +10,7 @@ import AVFoundation
 
 @objc public protocol VerimatrixBaseProtocol {
     func closeBtnDidPress()
+    func webviewCloseBtnDidPress()
+    func providerSelected(provider: String)
+    func errorOnApi()
 }

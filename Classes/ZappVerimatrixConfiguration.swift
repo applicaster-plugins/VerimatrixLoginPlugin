@@ -40,7 +40,7 @@ public struct ZappVerimatrixConfiguration {
     }
     
     public enum AssetKey : String{
-        case closeBtn = "provider_screen_close_btn"
+        case closeBtn = "schedule"
         case logoImage = "provider_screen_logo"
         case loginBtn = "provider_action_button_asset"
     }

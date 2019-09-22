@@ -14,6 +14,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     var providersIdp:[String]?
     var delegate: VerimatrixBaseProtocol?
     var configurationJson : [String:Any]?
+    var test = ["cat","dog","mouse","lion","tiger"]
    
     @objc @IBOutlet fileprivate weak var closeButton: UIButton!
     @objc @IBOutlet fileprivate weak var logoImageView: UIImageView!
@@ -67,7 +68,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return providersName?.count ?? 0
+        return test.count
     }
     
     //setting different color for the selected value and the else
@@ -83,7 +84,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         }
         
         let label = UILabel()
-        label.text = providersName?[row]
+        label.text = test[row]
         label.textAlignment = NSTextAlignment.center
         if(row == pickerView.selectedRow(inComponent: component)){
             StyleHelper.setLabelStyle(label: label, colorForKey: .pickerSelectedColor, fontSizeKey: .pickerSelectedSize , fontNameKey: .pickerSelectedFont, from: configurationJson)

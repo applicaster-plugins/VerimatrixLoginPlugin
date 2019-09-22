@@ -27,7 +27,7 @@ let baseApi = "http://pdx-is.uat.ntitleme.net/rest/1.0"
     
     // get a list of providers for the login screen
     func getProviders(completion: @escaping ((_ displayNames: [String]?, _ idps:[String]? ) -> Void)){
-        let apiName = "\(baseApi)/\(platformId ?? "")/\(ApiType.getProviders.rawValue)"
+        let apiName = "\(baseApi)/\(platformId ?? "urn:ntitlemeintegration:com:sp:staging")/\(ApiType.getProviders.rawValue)"
         let url = URL(string: apiName)!
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = "GET"

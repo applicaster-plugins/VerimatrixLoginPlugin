@@ -13,7 +13,9 @@ import ApplicasterSDK
 
 
 
-@objc public class ZappVerimatrixLogin : NSObject ,ZPAppLoadingHookProtocol, ZPLoginProviderProtocol, VerimatrixBaseProtocol, VerimatrixRedirectUriProtocol{
+
+@available(iOS 11.0, *)
+@objc public class ZappVerimatrixLogin : NSObject ,ZPAppLoadingHookProtocol, ZPLoginProviderUserDataProtocol , ZPLoginProviderProtocol, VerimatrixBaseProtocol, VerimatrixRedirectUriProtocol{
     
     public var configurationJSON: NSDictionary?
     var configurationManger: ZappVerimatrixConfiguration?
@@ -47,6 +49,19 @@ import ApplicasterSDK
       
     }
     
+    public func isUserComply(policies: [String : NSObject]) -> Bool {
+        if let freeValue = policies["free"] as? Bool {
+            if freeValue { return true}
+        }
+        
+        if let freeValue = policies["free"] as? String {
+            if (freeValue == "true") {return true}
+            }
+        
+        return !CredentialsManager.getToken().isEmpty
+        
+        }
+    
     public func isAuthenticated() -> Bool {
         return false
     }
@@ -63,6 +78,17 @@ import ApplicasterSDK
             return
         }
         
+        api?.trySilentLogin(completion: { (success) in
+            if(!success){
+                CredentialsManager.saveToken(token: "")
+                self.login(nil, completion: { (status) in
+                    
+                })
+                return
+            }
+        })
+
+        
         var presentLogin = false
         if let flag = startOnLaunch as? Bool {
             presentLogin = flag
@@ -71,6 +97,7 @@ import ApplicasterSDK
         } else if let str = startOnLaunch as? String {
             presentLogin = (str == "1")
         }
+        
         
         if(presentLogin){
             self.login(nil) { (status) in
@@ -99,30 +126,25 @@ import ApplicasterSDK
     }
     
     public func getUserToken() -> String {
-        return CredentialsManager.getCredential(key: .Code)
+        return CredentialsManager.getToken()
     }
     
     public func providerSelected(provider: String) {
         if let url = api?.urlForResource(resource: provider){
-             let bundle = Bundle.init(for: type(of: self))
              let webview = VerimatrixWebViewController(url: URL(string: url))
              webview?.redirectUriDelegate = self
-             let webViewloginController = VerimatrixWebViewLoginController(nibName: "VerimatrixWebViewLoginController", bundle: bundle)
-             webViewloginController.webViewController = webview
-             webViewloginController.delegate = self
-             webViewloginController.configurationJson = self.configurationJSON as? [String : Any]
-             loginViewController.present(webViewloginController,animated: true){
-                webViewloginController.addChildViewController(webViewloginController.webViewController, to: webViewloginController.webViewContainer)
-                webview?.loadTargetURL()
-            }
+             webview?.kCallbackURL = configurationJSON?["wgn_redirect_url"] as? String ?? "http://idp.securetve.com/saml2/assertionConsumer/"
+             loginViewController.webViewVC = webview
+             webview?.loadTargetURL()
         }
     }
     
-    public func handleRedirectUriWith(params: [String : Any]?) {
-        if let code = params?["code"] as? String {
-            CredentialsManager.saveCredential(object: code, for: .Code)
-            closeBtnDidPress()
-        }
+    public func handleRedirectUriWith(url: String) {
+        api?.startLoginFlaw(url: url, completion: { (success) in
+            if(!success){
+                self.errorOnApi()
+            }
+        })
     }
     
     public func webviewCloseBtnDidPress() {
@@ -138,6 +160,13 @@ import ApplicasterSDK
     }
     
     public func errorOnApi() {
-        
-    }
+            let message = configurationManger?.localizedString(for: .loginErrorMessage)
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            if let vc = self.navigationController?.viewControllers.first{
+                vc.present(alert, animated: true, completion: nil)
+            }else{
+                APApplicasterController.sharedInstance().rootViewController.topmostModal().present(alert, animated: true)
+            }
+        }
+    
 }

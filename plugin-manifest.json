@@ -7,7 +7,6 @@
     "require_startup_execution": true
   },
   "dependency_repository_url": [
-    "https://github.com/applicaster-plugins/VerimatrixLoginPlugin-iOS",
     "git@github.com:applicaster-plugins/VerimatrixLoginPlugin-iOS.git"
   ],
   "platform": "ios",
@@ -42,13 +41,41 @@
       "tooltip_text": "show the login screen when app launched"
     },
     {
+      "type": "checkbox",
+      "key": "display_chooser_screen",
+      "tooltip_text": "show the chooser screen "
+    },
+    {
       "type": "uploader",
       "key": "ios_assets_bundle"
     },
     {
       "type": "text",
+      "key": "idps_name",
+      "tooltip_text": "idps name"
+    },
+    {
+      "type": "text",
+      "key": "wgn_redirect_url",
+      "tooltip_text": "The login web view redirect url. example: http://idp.securetve.com/saml2/assertionConsumer/",
+      "default": "http://idp.securetve.com/saml2/assertionConsumer/"
+    },
+    {
+      "type": "text",
+      "key": "resource_id",
+      "tooltip_text": "WGN/verimatrix resource id, this value use to determine if the user has access to the provider",
+      "default": "WGNA"
+    },
+    {
+      "type": "text",
+      "key": "login_general_error",
+      "tooltip_text": "Generic error message when something when wrong in the flow.",
+      "default": "Error, please try again."
+    },
+    {
+      "type": "text",
       "key": "provider_screen_title_text",
-      "tooltip_text": "Providers screen title text"
+      "tooltip_text": "Title text of providers screen"
     },
 		{
 			"type": "text",

@@ -14,7 +14,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     var providersIdp:[String]?
     var delegate: VerimatrixBaseProtocol?
     var configurationJson : [String:Any]?
-    var test = ["cat","dog","mouse","lion","tiger"]
+    
    
     @objc @IBOutlet fileprivate weak var closeButton: UIButton!
     @objc @IBOutlet fileprivate weak var logoImageView: UIImageView!
@@ -22,10 +22,20 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     @objc @IBOutlet fileprivate weak var providerPickerView: UIPickerView!
     @objc @IBOutlet fileprivate weak var loginButton: UIButton!
     @objc @IBOutlet fileprivate weak var backgroundView: UIView!
-   
+    @objc @IBOutlet fileprivate weak var webViewContainer: UIView!
+    
+    var webViewVC: UIViewController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setNewValues()
+        if let displayWebView = configurationJson?["display_chooser_screen"] as? String{
+            if (displayWebView == "0"){
+                showWebViewLogin()
+            }
+        }
+        
     }
     
    @objc @IBAction fileprivate func closeBtnDidPress(_ sender: UIButton) {
@@ -35,9 +45,17 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     }
     
    @objc @IBAction fileprivate func loginBtnDidPress(_ sender: UIButton) {
+        showWebViewLogin()
+    }
+    
+    func showWebViewLogin(){
         if let delegate = delegate, let resource = providersIdp?[providerPickerView.selectedRow(inComponent: 0)]{
-        delegate.providerSelected(provider: resource)
-       }
+            delegate.providerSelected(provider: resource)
+        }
+        if let vc = webViewVC{
+            addChildViewController(vc, to: webViewContainer)
+            webViewContainer.isHidden = false
+        }
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -46,6 +64,18 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    func setNewValues(){
+        if let idps = providersIdp, let name = configurationJson?["idps_name"] as? String{
+            for idp in idps{
+                if(idp.containsIgnoringCase(find: name)){
+                    providersIdp?.insert(idp, at: 0)
+                    providersName?.insert(name, at: 0)
+                    break
+                }
+            }
+        }
     }
     
     //setting all views with helper from the plugin configuration ans assets
@@ -61,6 +91,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         StyleHelper.setImageView(imageView: logoImageView, bundle: bundle, key: .logoImage)
         StyleHelper.setButtonImage(button: closeButton, bundle: bundle, key: .closeBtn)
         StyleHelper.setButtonBGImage(button: loginButton, bundle: bundle, key: .loginBtn)
+        
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -68,7 +99,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return test.count
+        return providersName?.count ?? 0
     }
     
     //setting different color for the selected value and the else
@@ -84,7 +115,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         }
         
         let label = UILabel()
-        label.text = test[row]
+        label.text = providersName?[row]
         label.textAlignment = NSTextAlignment.center
         if(row == pickerView.selectedRow(inComponent: component)){
             StyleHelper.setLabelStyle(label: label, colorForKey: .pickerSelectedColor, fontSizeKey: .pickerSelectedSize , fontNameKey: .pickerSelectedFont, from: configurationJson)
@@ -98,3 +129,13 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         pickerView.reloadAllComponents()
     }
 }
+
+extension String {
+    func contains(find: String) -> Bool{
+        return self.range(of: find) != nil
+    }
+    func containsIgnoringCase(find: String) -> Bool{
+        return self.range(of: find, options: .caseInsensitive) != nil
+    }
+}
+

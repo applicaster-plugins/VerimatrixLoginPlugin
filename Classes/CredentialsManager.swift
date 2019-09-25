@@ -10,13 +10,13 @@ import Foundation
 @objc class CredentialsManager: NSObject{
     
     //save token or id or any info to user defaults
-    public static func saveCredential(object: String , for key: CredentialType){
-        UserDefaults.standard.set(object, forKey: key.rawValue)
+    public static func saveToken(token: String){
+        UserDefaults.standard.set(token, forKey: CredentialType.Token.rawValue)
     }
     
     //get token or id or any info from user defaults
-    public static func getCredential(key: CredentialType) -> String{
-        if let Credential = UserDefaults.standard.string(forKey: key.rawValue){
+    public static func getToken() -> String{
+        if let Credential = UserDefaults.standard.string(forKey: CredentialType.Token.rawValue){
             return Credential
         }else{
             return ""
@@ -24,6 +24,6 @@ import Foundation
     }
     
     public enum CredentialType: String{
-        case Code = "code"
+        case Token = "code"
     }
 }

@@ -36,19 +36,22 @@ import ApplicasterSDK
     }
     
     /**
-     `ZPLoginProviderUserDataProtocol` api. Call this to present UI to let user make login (if needed) and IAP purchase (if needed).
+     `ZPLoginProviderUserDataProtocol` api. Call this to present UI to let user make login.
      */
     public func login(_ additionalParameters: [String : Any]?, completion: @escaping ((ZPLoginOperationStatus) -> Void)) {
         self.presentLoginScreen()
     }
     
     /**
-     `ZPLoginProviderUserDataProtocol` api. Call this to logout from Cleeng.
+     `ZPLoginProviderUserDataProtocol` api.
      */
     public func logout(_ completion: @escaping ((ZPLoginOperationStatus) -> Void)) {
       
     }
     
+    /**
+     `ZPLoginProviderUserDataProtocol` api. Call this to check if item is locked
+     */
     public func isUserComply(policies: [String : NSObject]) -> Bool {
         if let freeValue = policies["free"] as? Bool {
             if freeValue { return true}
@@ -78,17 +81,7 @@ import ApplicasterSDK
             return
         }
         
-        api?.trySilentLogin(completion: { (success) in
-            if(!success){
-                CredentialsManager.saveToken(token: "")
-                self.login(nil, completion: { (status) in
-                    
-                })
-                return
-            }
-        })
-
-        
+        // if check box is checked so show login screen
         var presentLogin = false
         if let flag = startOnLaunch as? Bool {
             presentLogin = flag
@@ -98,13 +91,24 @@ import ApplicasterSDK
             presentLogin = (str == "1")
         }
         
-        
         if(presentLogin){
             self.login(nil) { (status) in
             }
+            return
         }
+        
+        //try to get new token in each lunch. if failed: show login
+        api?.trySilentLogin(completion: { (success) in
+            if(!success){
+                CredentialsManager.saveToken(token: "")
+                self.login(nil, completion: { (status) in
+                    
+                })
+            }
+        })
     }
     
+    // present the login screen
      func presentLoginScreen(){
         let bundle = Bundle.init(for: type(of: self))
         loginViewController = VerimatrixLoginViewController(nibName: "VerimatrixLoginViewController", bundle: bundle)
@@ -125,10 +129,12 @@ import ApplicasterSDK
         }
     }
     
+    // get user token
     public func getUserToken() -> String {
         return CredentialsManager.getToken()
     }
     
+    //when user choose a provider its open the webview
     public func providerSelected(provider: String) {
         if let url = api?.urlForResource(resource: provider){
              let webview = VerimatrixWebViewController(url: URL(string: url))
@@ -139,34 +145,42 @@ import ApplicasterSDK
         }
     }
     
+    //handle the redirect url from the webview
     public func handleRedirectUriWith(url: String) {
         api?.startLoginFlaw(url: url, completion: { (success) in
             if(!success){
                 self.errorOnApi()
+            }else{
+                self.closeBtnDidPress()
             }
         })
     }
     
+    // close login webView screen if exists
     public func webviewCloseBtnDidPress() {
         if  let vc = self.navigationController?.viewControllers.first{
             vc.dismiss(animated: true, completion: nil)
         }
     }
     
+     // close login screen if exists
     public func closeBtnDidPress() {
         if let vc = navigationController?.presentingViewController{
             vc.dismiss(animated: true, completion: nil)
         }
     }
     
+    // show error message if api request falied
     public func errorOnApi() {
-            let message = configurationManger?.localizedString(for: .loginErrorMessage)
+            let message = configurationManger?.localizedString(for: .loginErrorMessage) ?? "Error, try again later"
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (finish) in
+            self.closeBtnDidPress()
+        }))
             if let vc = self.navigationController?.viewControllers.first{
                 vc.present(alert, animated: true, completion: nil)
             }else{
                 APApplicasterController.sharedInstance().rootViewController.topmostModal().present(alert, animated: true)
             }
         }
-    
 }

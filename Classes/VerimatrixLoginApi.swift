@@ -64,7 +64,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
         }
     }
     
-    
+    // login flaw to get the token
     func startLoginFlaw(url: String, completion: @escaping ((_ success: Bool) -> Void)){
         let requestUrl = URL(string: url)!
         let request = NSMutableURLRequest(url: requestUrl)
@@ -91,6 +91,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
         }
     }
     
+    //get user token api
     func getUserToken( completion: @escaping ((_ success: Bool) -> Void)){
         let resourceId = configuration?["resource_id"] as? String ?? "WGNA"
         let apiName = "\(baseApi)/\(platformId!)/\(ApiType.resourceId.rawValue)/\(resourceId)?format=json&responsefield=aisrespons"
@@ -115,6 +116,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
         }
     }
     
+    //trying to get user token in every app launch
     func trySilentLogin(completion: @escaping ((_ success: Bool) -> Void)){
         let apiName = "\(baseApi)/\(platformId!)/\(ApiType.slientLogin.rawValue)"
         let url = URL(string: apiName)!
@@ -149,7 +151,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
        return url
     }
     
-    func saveCookie(url: String){
+    func saveCookies(url: String){
         let url = URL(string: url)!
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = "GET"

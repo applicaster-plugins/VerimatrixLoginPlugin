@@ -14,8 +14,8 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     var providersIdp:[String]?
     var delegate: VerimatrixBaseProtocol?
     var configurationJson : [String:Any]?
+    var webViewVC: UIViewController?
     
-   
     @objc @IBOutlet fileprivate weak var closeButton: UIButton!
     @objc @IBOutlet fileprivate weak var logoImageView: UIImageView!
     @objc @IBOutlet fileprivate weak var chooseProviderLabel: UILabel!
@@ -23,8 +23,6 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     @objc @IBOutlet fileprivate weak var loginButton: UIButton!
     @objc @IBOutlet fileprivate weak var backgroundView: UIView!
     @objc @IBOutlet fileprivate weak var webViewContainer: UIView!
-    
-    var webViewVC: UIViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +33,6 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
                 showWebViewLogin()
             }
         }
-        
     }
     
    @objc @IBAction fileprivate func closeBtnDidPress(_ sender: UIButton) {
@@ -48,6 +45,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         showWebViewLogin()
     }
     
+    //show the webview for the selected provider
     func showWebViewLogin(){
         if let delegate = delegate, let resource = providersIdp?[providerPickerView.selectedRow(inComponent: 0)]{
             delegate.providerSelected(provider: resource)
@@ -66,6 +64,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         super.init(coder: aDecoder)
     }
     
+    //set value to the providers according to the configuration
     func setNewValues(){
         if let idps = providersIdp, let name = configurationJson?["idps_name"] as? String{
             for idp in idps{
@@ -91,7 +90,6 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         StyleHelper.setImageView(imageView: logoImageView, bundle: bundle, key: .logoImage)
         StyleHelper.setButtonImage(button: closeButton, bundle: bundle, key: .closeBtn)
         StyleHelper.setButtonBGImage(button: loginButton, bundle: bundle, key: .loginBtn)
-        
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -128,7 +126,14 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         pickerView.reloadAllComponents()
     }
-}
+    
+    //prevent landscape orientation
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        get {
+            return .portrait
+         }
+       }
+    }
 
 extension String {
     func contains(find: String) -> Bool{

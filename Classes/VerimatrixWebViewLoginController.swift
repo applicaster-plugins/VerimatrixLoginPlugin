@@ -39,7 +39,7 @@ class VerimatrixWebViewLoginController: UIViewController {
             delegate.webviewCloseBtnDidPress()
         }
     }
-    
+
     //prevent landscape orientation
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         get {

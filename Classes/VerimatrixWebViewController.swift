@@ -26,18 +26,16 @@ class VerimatrixWebViewController: APTimedWebViewController {
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         super.webView(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
        
-       
-        
         let request = navigationAction.request
         guard let urlString = request.url?.absoluteString,
             (urlString.range(of: kCallbackURL) != nil) else{
                 return
         }
 
+        // save cookies from redirect url
         webView.getCookies(for: urlString) { (cookie) in
               self.redirectUriDelegate.handleRedirectUriWith(url: urlString)
         }
-      
     }
 }
 

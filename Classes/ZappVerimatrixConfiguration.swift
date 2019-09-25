@@ -45,8 +45,7 @@ public struct ZappVerimatrixConfiguration {
         case logoImage = "provider_screen_logo"
         case loginBtn = "provider_action_button_asset"
     }
-    
-    
+
     public func localizedString(for key: ConfigKey, defaultString: String? = nil) -> String? {
         return (configuration[key.rawValue] as? String) ?? defaultString
     }

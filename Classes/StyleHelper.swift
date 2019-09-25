@@ -76,5 +76,4 @@ import Foundation
             button.setBackgroundImage(image, for: .normal)
         }
     }
-    
 }

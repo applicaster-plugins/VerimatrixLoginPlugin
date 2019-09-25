@@ -37,13 +37,18 @@ public struct ZappVerimatrixConfiguration {
         case pickerSelectedColor = "provider_selected_color"
         case pickerSelectedSize = "provider_selected_size"
         case pickerSelectedFont = "provider_selected_font"
+        case loginErrorMessage = "login_general_error"
     }
     
     public enum AssetKey : String{
-        case closeBtn = "schedule"
+        case closeBtn = "provider_screen_close_btn"
         case logoImage = "provider_screen_logo"
         case loginBtn = "provider_action_button_asset"
     }
     
+    
+    public func localizedString(for key: ConfigKey, defaultString: String? = nil) -> String? {
+        return (configuration[key.rawValue] as? String) ?? defaultString
+    }
 }
 

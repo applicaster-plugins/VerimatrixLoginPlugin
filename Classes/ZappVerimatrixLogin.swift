@@ -101,9 +101,6 @@ import ApplicasterSDK
         api?.trySilentLogin(completion: { (success) in
             if(!success){
                 CredentialsManager.saveToken(token: "")
-                self.login(nil, completion: { (status) in
-                    
-                })
             }
         })
     }

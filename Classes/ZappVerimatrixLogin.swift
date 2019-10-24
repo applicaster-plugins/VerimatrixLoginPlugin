@@ -39,6 +39,7 @@ import ApplicasterSDK
      `ZPLoginProviderUserDataProtocol` api. Call this to present UI to let user make login.
      */
     public func login(_ additionalParameters: [String : Any]?, completion: @escaping ((ZPLoginOperationStatus) -> Void)) {
+        self.loginCompletion = completion
         self.presentLoginScreen()
     }
     
@@ -148,9 +149,19 @@ import ApplicasterSDK
             if(!success){
                 self.errorOnApi()
             }else{
-                self.closeBtnDidPress()
+                self.closeOnlyLoginScreen {
+                     self.loginCompletion?(.completedSuccessfully)
+                }
             }
         })
+    }
+    
+    func closeOnlyLoginScreen(completion: @escaping () -> ()){
+        if  let vc = self.navigationController?.viewControllers.first{
+            vc.dismiss(animated: true) {
+                completion()
+            }
+        }
     }
     
     // close login webView screen if exists

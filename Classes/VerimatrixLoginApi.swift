@@ -26,21 +26,19 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
     }
     
     // get a list of providers for the login screen
-    func getProviders(completion: @escaping ((_ names: [String]?, _ possibleIdps: [String]?) -> Void)){
+    func getProviders(completion: @escaping ((_ providers: [Providers]?) -> Void)){
         let apiName = "\(baseApi)/\(platformId ?? "urn:ntitlemeintegration:com:sp:staging")/\(ApiType.getProviders.rawValue)"
         let url = URL(string: apiName)!
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = "GET"
         makeRequest(request: request) { (responseJson, response, error) in
             if(response?.statusCode == 200){
-                var names : [String] = []
-                var possibleIdps : [String] = []
+                var allProviders = [Providers]()
                 if let json = responseJson as? [String:Any] {
                     if let providers = json["possible_idps"] as? [String:[String:Any]]{
                         providers.forEach({ (model) in
-                            possibleIdps.append(model.key)
-                            if let providerName = model.value["name"] as? String{
-                                names.append(providerName)
+                            if let providerName = model.value["display_name"] as? String{
+                                allProviders.append(Providers(name: providerName, idp: model.key))
                             }
                         })
                     }else{
@@ -55,7 +53,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
                         return
                     }
                 }
-                completion(names,possibleIdps)
+                completion(allProviders)
             }else{
                 if let delegate = self.delegate{
                     delegate.errorOnApi()
@@ -98,6 +96,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
         let url = URL(string: apiName)!
         let request = NSMutableURLRequest(url: url)
         request.httpMethod = "GET"
+        print(request.allHTTPHeaderFields ?? "none")
         makeRequest(request: request) { (responseJson, response, error) in
             if(response?.statusCode == 200){
                 if let jsonRespone = responseJson as? [String:Any]{

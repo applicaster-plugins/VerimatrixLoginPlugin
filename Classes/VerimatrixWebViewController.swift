@@ -21,20 +21,23 @@ public protocol VerimatrixRedirectUriProtocol {
 class VerimatrixWebViewController: APTimedWebViewController {
     
     public var kCallbackURL: String!
+    public var kCallbackURLHTTPS: String!
     public var redirectUriDelegate: VerimatrixRedirectUriProtocol!
-    
+
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         super.webView(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
-       
+        
         let request = navigationAction.request
-        guard let urlString = request.url?.absoluteString,
-            (urlString.range(of: kCallbackURL) != nil) else{
-                return
-        }
-
-        // save cookies from redirect url
-        webView.getCookies(for: urlString) { (cookie) in
-              self.redirectUriDelegate.handleRedirectUriWith(url: urlString)
+        if let urlString = request.url?.absoluteString{
+            if((urlString.starts(with: kCallbackURLHTTPS)) || (urlString.starts(with: kCallbackURL))){
+                webView.getCookies(for: urlString) { (cookie) in
+                    if(urlString.containsIgnoringCase(find: "SAMLRequest")){
+                         self.redirectUriDelegate.handleRedirectUriWith(url: urlString)
+                    }else{
+                         self.redirectUriDelegate.handleRedirectUriWith(url: "")
+                    }
+                }
+            }
         }
     }
 }

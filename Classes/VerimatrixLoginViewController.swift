@@ -10,8 +10,7 @@ import ZappPlugins
 
 class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UIPickerViewDataSource {
     
-    var providersName:[String]?
-    var providersIdp:[String]?
+    var providers: [Providers]?
     var delegate: VerimatrixBaseProtocol?
     var configurationJson : [String:Any]?
     var webViewVC: UIViewController?
@@ -27,7 +26,6 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        setNewValues()
         if let displayWebView = configurationJson?["display_chooser_screen"] as? String{
             if (displayWebView == "0"){
                 showWebViewLogin()
@@ -47,7 +45,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     
     //show the webview for the selected provider
     func showWebViewLogin(){
-        if let delegate = delegate, let resource = providersIdp?[providerPickerView.selectedRow(inComponent: 0)]{
+        if let delegate = delegate, let resource = providers?[providerPickerView.selectedRow(inComponent: 0)].idp{
             delegate.providerSelected(provider: resource)
         }
         if let vc = webViewVC{
@@ -64,21 +62,11 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         super.init(coder: aDecoder)
     }
     
-    //set value to the providers according to the configuration
-    func setNewValues(){
-        if let idps = providersIdp, let name = configurationJson?["idps_name"] as? String{
-            for idp in idps{
-                if(idp.containsIgnoringCase(find: name)){
-                    providersIdp?.insert(idp, at: 0)
-                    providersName?.insert(name, at: 0)
-                    break
-                }
-            }
-        }
-    }
-    
     //setting all views with helper from the plugin configuration ans assets
     func setupView(){
+       providers =  providers?.sorted(by: { (one, two) -> Bool in
+        return one.name.lowercased() < two.name.lowercased()
+        })
         self.providerPickerView.delegate = self
         self.providerPickerView.dataSource = self
         let bundle = Bundle(for: type(of: self))
@@ -97,7 +85,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return providersName?.count ?? 0
+        return providers?.count ?? 0
     }
     
     //setting different color for the selected value and the else
@@ -113,7 +101,7 @@ class VerimatrixLoginViewController: UIViewController ,UIPickerViewDelegate , UI
         }
         
         let label = UILabel()
-        label.text = providersName?[row]
+        label.text = providers?[row].name
         label.textAlignment = NSTextAlignment.center
         if(row == pickerView.selectedRow(inComponent: component)){
             StyleHelper.setLabelStyle(label: label, colorForKey: .pickerSelectedColor, fontSizeKey: .pickerSelectedSize , fontNameKey: .pickerSelectedFont, from: configurationJson)
@@ -141,6 +129,17 @@ extension String {
     }
     func containsIgnoringCase(find: String) -> Bool{
         return self.range(of: find, options: .caseInsensitive) != nil
+    }
+}
+
+class Providers {
+    
+    var name = ""
+    var idp = ""
+    
+    init(name: String , idp: String) {
+        self.name = name
+        self.idp = idp
     }
 }
 

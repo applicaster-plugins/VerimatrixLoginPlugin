@@ -115,10 +115,9 @@ import ApplicasterSDK
         navigationController = UINavigationController.init(rootViewController: loginViewController)
         navigationController?.setNavigationBarHidden(true, animated: false)
         if let navController = navigationController{
-            api?.getProviders(completion: { (displayNames , providersIdps)  in
-                if (providersIdps?.count != 0){
-                    self.loginViewController.providersName = displayNames
-                    self.loginViewController.providersIdp  = providersIdps
+            api?.getProviders(completion: { (providers)  in
+                if let allProviders = providers{
+                    self.loginViewController.providers = allProviders
                     APApplicasterController.sharedInstance().rootViewController.topmostModal().present(navController,
                                                                                                        animated: true) {
                     }
@@ -137,7 +136,9 @@ import ApplicasterSDK
         if let url = api?.urlForResource(resource: provider){
              let webview = VerimatrixWebViewController(url: URL(string: url))
              webview?.redirectUriDelegate = self
-             webview?.kCallbackURL = configurationJSON?["wgn_redirect_url"] as? String ?? "http://idp.securetve.com/saml2/assertionConsumer/"
+             let callbackUrl = configurationJSON?["wgn_redirect_url"] as? String ?? "http://idp.securetve.com/saml2/assertionConsumer/"
+             webview?.kCallbackURL = callbackUrl
+             webview?.kCallbackURLHTTPS = callbackUrl.replacingOccurrences(of: "http", with: "https")
              loginViewController.webViewVC = webview
              webview?.loadTargetURL()
         }
@@ -145,15 +146,27 @@ import ApplicasterSDK
     
     //handle the redirect url from the webview
     public func handleRedirectUriWith(url: String) {
-        api?.startLoginFlaw(url: url, completion: { (success) in
-            if(!success){
-                self.errorOnApi()
-            }else{
-                self.closeOnlyLoginScreen {
-                     self.loginCompletion?(.completedSuccessfully)
+        if(url != ""){
+            api?.startLoginFlaw(url: url, completion: { (success) in
+                if(!success){
+                    self.errorOnApi()
+                }else{
+                    self.closeOnlyLoginScreen {
+                        self.loginCompletion?(.completedSuccessfully)
+                    }
                 }
-            }
-        })
+            })
+        }else{
+            api?.getUserToken(completion: { (success) in
+                if(!success){
+                    self.errorOnApi()
+                }else{
+                        self.closeOnlyLoginScreen {
+                        self.loginCompletion?(.completedSuccessfully)
+                    }
+                }
+            })
+        }
     }
     
     func closeOnlyLoginScreen(completion: @escaping () -> ()){

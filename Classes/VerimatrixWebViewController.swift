@@ -24,6 +24,19 @@ class VerimatrixWebViewController: APTimedWebViewController {
     public var kCallbackURLHTTPS: String!
     public var redirectUriDelegate: VerimatrixRedirectUriProtocol!
 
+    override func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if let urlString = webView.url?.absoluteString{
+            if(((urlString.starts(with: kCallbackURLHTTPS))) || (urlString.starts(with: kCallbackURL))){
+                webView.getCookies(for: urlString) { (cookie) in
+                    if(!urlString.containsIgnoringCase(find: "SAMLRequest")){
+                          self.redirectUriDelegate.handleRedirectUriWith(url: "")
+                    }
+                }
+            }
+        }
+    }
+    
+    
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         super.webView(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
         
@@ -33,8 +46,6 @@ class VerimatrixWebViewController: APTimedWebViewController {
                 webView.getCookies(for: urlString) { (cookie) in
                     if(urlString.containsIgnoringCase(find: "SAMLRequest")){
                          self.redirectUriDelegate.handleRedirectUriWith(url: urlString)
-                    }else{
-                         self.redirectUriDelegate.handleRedirectUriWith(url: "")
                     }
                 }
             }

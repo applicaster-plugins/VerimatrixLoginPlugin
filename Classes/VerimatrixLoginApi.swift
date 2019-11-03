@@ -13,7 +13,7 @@ import ApplicasterSDK
 let baseApi = "https://idp.securetve.com/rest/1.0"
 
 @objc class VerimatrixLoginApi: NSObject {
-    
+    var getUserTokenRetry = 0
     var configuration: NSDictionary?
     var platformId: String?
     var delegate: VerimatrixBaseProtocol?
@@ -104,7 +104,13 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
                        CredentialsManager.saveToken(token: token)
                        completion(true)
                     }else{
-                       completion(false)
+                        self.getUserTokenRetry += 1
+                        if(self.getUserTokenRetry == 5) {
+                            self.getUserTokenRetry = 0
+                            completion(false)
+                        }else{
+                            self.getUserToken(completion: completion)
+                        }
                     }
                 }else{
                   completion(false)

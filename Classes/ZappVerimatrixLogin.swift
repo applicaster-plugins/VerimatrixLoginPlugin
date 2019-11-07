@@ -19,7 +19,7 @@ import ApplicasterSDK
     
     public var configurationJSON: NSDictionary?
     var configurationManger: ZappVerimatrixConfiguration?
-    var navigationController: UINavigationController? = nil
+    var navController: UINavigationController? = nil
     var loginViewController: VerimatrixLoginViewController!
     var api: VerimatrixLoginApi?
     fileprivate var loginCompletion:(((_ status: ZPLoginOperationStatus) -> Void))?
@@ -31,6 +31,7 @@ import ApplicasterSDK
     public required init(configurationJSON: NSDictionary?) {
         super.init()
         self.configurationJSON = configurationJSON
+        configurationManger = ZappVerimatrixConfiguration(configuration: configurationJSON as! [String : Any])
         api = VerimatrixLoginApi(config: configurationJSON)
         api?.delegate = self
     }
@@ -112,9 +113,9 @@ import ApplicasterSDK
         loginViewController = VerimatrixLoginViewController(nibName: "VerimatrixLoginViewController", bundle: bundle)
         loginViewController.delegate = self
         loginViewController.configurationJson = self.configurationJSON as? [String : Any]
-        navigationController = UINavigationController.init(rootViewController: loginViewController)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        if let navController = navigationController{
+        navController = UINavigationController.init(rootViewController: loginViewController)
+        navController?.setNavigationBarHidden(true, animated: false)
+        if let navController = navController{
             api?.getProviders(completion: { (providers)  in
                 if let allProviders = providers{
                     self.loginViewController.providers = allProviders
@@ -146,32 +147,31 @@ import ApplicasterSDK
     
     //handle the redirect url from the webview
     public func handleRedirectUriWith(url: String) {
-        if(url != ""){
-            api?.startLoginFlaw(url: url, completion: { (success) in
-                if(!success){
-                    self.errorOnApi()
-                }else{
-                    self.closeOnlyLoginScreen {
+        self.closeOnlyLoginScreen{
+            if(url != ""){
+                self.api?.startLoginFlaw(url: url, completion: { (success) in
+                    if(!success){
+                        self.errorOnApi()
+                    }else{
                         self.loginCompletion?(.completedSuccessfully)
                     }
-                }
-            })
-        }else{
-            api?.getUserToken(completion: { (success) in
-                if(!success){
-                    self.errorOnApi()
-                }else{
-                        self.closeOnlyLoginScreen {
+                })
+            }else{
+                self.api?.getUserToken(completion: { (success) in
+                    if(!success){
+                        self.errorOnApi()
+                    }else{
                         self.loginCompletion?(.completedSuccessfully)
                     }
-                }
-            })
+                })
+            }
         }
     }
     
     func closeOnlyLoginScreen(completion: @escaping () -> ()){
-        if  let vc = self.navigationController?.viewControllers.first{
+        if  let vc = self.navController?.viewControllers.first{
             vc.dismiss(animated: true) {
+                self.navController = nil
                 completion()
             }
         }
@@ -179,29 +179,31 @@ import ApplicasterSDK
     
     // close login webView screen if exists
     public func webviewCloseBtnDidPress() {
-        if  let vc = self.navigationController?.viewControllers.first{
+        if  let vc = self.navController?.viewControllers.first{
             vc.dismiss(animated: true, completion: nil)
+            self.navController = nil
         }
     }
     
-     // close login screen if exists
+    // close login screen if exists
     public func closeBtnDidPress() {
-        if let vc = navigationController?.presentingViewController{
+        if let vc = navController?.presentingViewController{
             vc.dismiss(animated: true, completion: nil)
+            self.navController = nil
         }
     }
     
     // show error message if api request falied
     public func errorOnApi() {
-            let message = configurationManger?.localizedString(for: .loginErrorMessage) ?? "Error, try again later"
-            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let message = configurationManger?.localizedString(for: .loginErrorMessage, defaultString: "try again")
+        let alert = UIAlertController(title: "WGN America", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (finish) in
             self.closeBtnDidPress()
         }))
-            if let vc = self.navigationController?.viewControllers.first{
-                vc.present(alert, animated: true, completion: nil)
-            }else{
-                APApplicasterController.sharedInstance().rootViewController.topmostModal().present(alert, animated: true)
-            }
+        if let vc = self.navController?.viewControllers.first{
+            vc.present(alert, animated: true, completion: nil)
+        }else{
+            APApplicasterController.sharedInstance().rootViewController.topmostModal().present(alert, animated: true)
         }
+    }
 }

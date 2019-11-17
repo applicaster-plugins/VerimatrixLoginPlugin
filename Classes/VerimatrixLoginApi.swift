@@ -109,7 +109,9 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
                             self.getUserTokenRetry = 0
                             completion(false)
                         }else{
-                            self.getUserToken(completion: completion)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                self.getUserToken(completion: completion)
+                            }
                         }
                     }
                 }else{

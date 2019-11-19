@@ -21,6 +21,7 @@ import ApplicasterSDK
     var configurationManger: ZappVerimatrixConfiguration?
     var navController: UINavigationController? = nil
     var loginViewController: VerimatrixLoginViewController!
+    var webViewController: VerimatrixWebViewController!
     var api: VerimatrixLoginApi?
     fileprivate var loginCompletion:(((_ status: ZPLoginOperationStatus) -> Void))?
 
@@ -135,35 +136,41 @@ import ApplicasterSDK
     //when user choose a provider its open the webview
     public func providerSelected(provider: String) {
         if let url = api?.urlForResource(resource: provider){
-             let webview = VerimatrixWebViewController(url: URL(string: url))
-             webview?.redirectUriDelegate = self
+             webViewController = VerimatrixWebViewController(url: URL(string: url))
+             webViewController?.redirectUriDelegate = self
              let callbackUrl = configurationJSON?["wgn_redirect_url"] as? String ?? "http://idp.securetve.com/saml2/assertionConsumer/"
-             webview?.kCallbackURL = callbackUrl
-             webview?.kCallbackURLHTTPS = callbackUrl.replacingOccurrences(of: "http", with: "https")
-             loginViewController.webViewVC = webview
-             webview?.loadTargetURL()
+             webViewController?.kCallbackURL = callbackUrl
+             webViewController?.kCallbackURLHTTPS = callbackUrl.replacingOccurrences(of: "http", with: "https")
+             loginViewController.webViewVC = webViewController
+             webViewController?.loadTargetURL()
         }
     }
     
     //handle the redirect url from the webview
-    public func handleRedirectUriWith(url: String) {
-        self.closeOnlyLoginScreen{
-            if(url != ""){
-                self.api?.startLoginFlaw(url: url, completion: { (success) in
-                    if(!success){
-                        self.errorOnApi()
-                    }else{
-                        self.loginCompletion?(.completedSuccessfully)
-                    }
-                })
-            }else{
-                self.api?.getUserToken(completion: { (success) in
-                    if(!success){
-                        self.errorOnApi()
-                    }else{
-                        self.loginCompletion?(.completedSuccessfully)
-                    }
-                })
+    public func handleRedirectUriWith(url: String ,success: Bool) {
+        if(!success){
+            if let _ =  loginViewController.webViewVC{
+                webViewController.loadTargetURL()
+            }
+        }else{
+            self.closeOnlyLoginScreen{
+                if(url != ""){
+                    self.api?.startLoginFlaw(url: url, completion: { (success) in
+                        if(!success){
+                            self.errorOnApi()
+                        }else{
+                            self.loginCompletion?(.completedSuccessfully)
+                        }
+                    })
+                }else{
+                    self.api?.getUserToken(completion: { (success) in
+                        if(!success){
+                            self.errorOnApi()
+                        }else{
+                            self.loginCompletion?(.completedSuccessfully)
+                        }
+                    })
+                }
             }
         }
     }

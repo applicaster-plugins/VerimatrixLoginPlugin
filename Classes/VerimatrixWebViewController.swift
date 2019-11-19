@@ -13,7 +13,7 @@ import ZappPlugins
 import ZappLoginPluginsSDK
 
 public protocol VerimatrixRedirectUriProtocol {
-    func handleRedirectUriWith(url: String)
+    func handleRedirectUriWith(url: String ,success: Bool)
 }
 
 //handling redirect url from webview login
@@ -29,7 +29,14 @@ class VerimatrixWebViewController: APTimedWebViewController {
             if(((urlString.starts(with: kCallbackURLHTTPS))) || (urlString.starts(with: kCallbackURL))){
                 webView.getCookies(for: urlString) { (cookie) in
                     if(!urlString.containsIgnoringCase(find: "SAMLRequest")){
-                          self.redirectUriDelegate.handleRedirectUriWith(url: "")
+                        webView.evaluateJavaScript("document.documentElement.outerHTML") { (result, error) in
+                            if let html = result as? String {
+                                let success = html.containsIgnoringCase(find: "querytoken")
+                                self.redirectUriDelegate.handleRedirectUriWith(url: "", success: success)
+                            }else{
+                                self.redirectUriDelegate.handleRedirectUriWith(url: "", success: false)
+                            }
+                        }
                     }
                 }
             }
@@ -45,7 +52,7 @@ class VerimatrixWebViewController: APTimedWebViewController {
             if((urlString.starts(with: kCallbackURLHTTPS)) || (urlString.starts(with: kCallbackURL))){
                 webView.getCookies(for: urlString) { (cookie) in
                     if(urlString.containsIgnoringCase(find: "SAMLRequest")){
-                         self.redirectUriDelegate.handleRedirectUriWith(url: urlString)
+                        self.redirectUriDelegate.handleRedirectUriWith(url: urlString, success: true)
                     }
                 }
             }

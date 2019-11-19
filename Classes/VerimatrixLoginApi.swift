@@ -9,6 +9,7 @@ import Foundation
 import ZappPlugins
 import ZappLoginPluginsSDK
 import ApplicasterSDK
+import os
 
 let baseApi = "https://idp.securetve.com/rest/1.0"
 
@@ -73,6 +74,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
                 if let jsonRespone = responseJson as? [String:Any]{
                     if let authenticated = jsonRespone["authenticated"] as? Bool{
                         if(authenticated){
+                            
                             self.getUserToken(completion: completion)
                         }else{
                             completion(false)
@@ -93,8 +95,11 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
     func getUserToken( completion: @escaping ((_ success: Bool) -> Void)){
         let resourceId = configuration?["resource_id"] as? String ?? "WGNA"
         let apiName = "\(baseApi)/\(platformId!)/\(ApiType.resourceId.rawValue)/\(resourceId)?format=json&responsefield=aisrespons"
+        os_log("Request url %s", apiName)
         let url = URL(string: apiName)!
         let request = NSMutableURLRequest(url: url)
+        let cookis = HTTPCookie.requestHeaderFields(with: readCookie(forURL: url)).description
+        os_log("Request cookies %s", cookis)
         request.httpMethod = "GET"
         print(request.allHTTPHeaderFields ?? "none")
         makeRequest(request: request) { (responseJson, response, error) in
@@ -104,6 +109,7 @@ let baseApi = "https://idp.securetve.com/rest/1.0"
                        CredentialsManager.saveToken(token: token)
                        completion(true)
                     }else{
+                        os_log("failed with response: %s", jsonRespone.description)
                         self.getUserTokenRetry += 1
                         if(self.getUserTokenRetry == 5) {
                             self.getUserTokenRetry = 0

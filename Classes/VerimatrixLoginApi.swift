@@ -7,7 +7,6 @@
 
 import Foundation
 import ZappPlugins
-import ZappLoginPluginsSDK
 import ApplicasterSDK
 import os
 

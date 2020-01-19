@@ -10,7 +10,6 @@
 import Foundation
 import ApplicasterSDK
 import ZappPlugins
-import ZappLoginPluginsSDK
 
 public protocol VerimatrixRedirectUriProtocol {
     func handleRedirectUriWith(url: String ,success: Bool)
